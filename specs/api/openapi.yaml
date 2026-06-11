@@ -1,0 +1,163 @@
+openapi: 3.1.0
+
+info:
+  title: CRM API
+  version: 0.1.0
+  description: |
+    REST API for the Spec-Driven CRM project.
+    
+    All endpoints require Bearer JWT authentication unless marked public.
+    All responses use a consistent envelope format.
+    All list endpoints support pagination via `page` and `limit` query params.
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://api.your-crm.com
+    description: Production
+
+security:
+  - bearerAuth: []
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+      description: Page number for pagination
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+      description: Items per page
+    sort:
+      name: sort
+      in: query
+      schema:
+        type: string
+        default: createdAt
+      description: Field to sort by
+    order:
+      name: order
+      in: query
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+      description: Sort direction
+
+  schemas:
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          description: Machine-readable error code
+          example: NOT_FOUND
+        message:
+          type: string
+          description: Human-readable description
+          example: Lead not found
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    ValidationError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            error:
+              example: VALIDATION_ERROR
+            details:
+              description: Per-field validation errors
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid JWT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Insufficient permissions for this role
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: Request body failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+
+# ─────────────────────────────────────────────────────────────
+# Paths are added below as each feature spec is approved.
+# Each feature gets its own section comment.
+# ─────────────────────────────────────────────────────────────
+
+paths: {}
+
+# ─── AUTH ────────────────────────────────────────────────────
+# (to be added when auth feature spec is approved)
+
+# ─── CONTACTS ────────────────────────────────────────────────
+# (to be added when contact-management spec is approved)
+
+# ─── COMPANIES ───────────────────────────────────────────────
+# (to be added when company-management spec is approved)
+
+# ─── LEADS ───────────────────────────────────────────────────
+# (to be added when lead-management spec is approved)
+
+# ─── DEALS ───────────────────────────────────────────────────
+# (to be added when deal-management spec is approved)
+
+# ─── ACTIVITIES ──────────────────────────────────────────────
+# (to be added when activity-management spec is approved)
+
+# ─── TASKS ───────────────────────────────────────────────────
+# (to be added when task-management spec is approved)
+
+# ─── REPORTS ─────────────────────────────────────────────────
+# (to be added when reports spec is approved)

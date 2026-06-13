@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "node",
+      "args": [
+        "C:\\nvm4w\\nodejs\\node_modules\\@modelcontextprotocol\\server-postgres\\dist\\index.js",
+        "postgresql://neondb_owner:npg_mQ8ZlNd6vyMR@ep-tiny-base-adzxgalt-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+      ]
+    }
+  }
+}

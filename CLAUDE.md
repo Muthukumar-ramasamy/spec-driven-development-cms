@@ -142,6 +142,24 @@ For each module: implement → generate-tests → review-feature before moving o
 
 ---
 
+## MCP integrations (Phase 10)
+
+| MCP Server | Package | Purpose |
+|------------|---------|---------|
+| Neon | `@neondatabase/mcp-server-neon` | Run SQL, inspect schema, manage branches |
+
+**Setup required**: Set `NEON_API_KEY` in your shell before launching Claude Code.
+```powershell
+$env:NEON_API_KEY = "your-neon-api-key"
+```
+Get the key from: Neon console → Account Settings → API Keys.
+
+The `DATABASE_URL` in `backend/.env` is separate — it's for Drizzle ORM (app queries + migrations).
+
+See `specs/phases/phase-10-mcp.md` for full integration details and common SQL queries.
+
+---
+
 ## Key architecture decisions
 
 | ADR | Decision |

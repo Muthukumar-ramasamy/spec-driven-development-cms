@@ -117,7 +117,7 @@ STATES
 UI SPEC COMPLIANCE
 [ ] Every component in the UI spec's Component section exists in the output
 [ ] Permission matrix from the UI spec is correctly implemented
-[ ] Responsive behaviour from the UI spec is implemented (Tailwind breakpoints)
+[ ] Responsive behaviour from the UI spec is implemented (MUI breakpoints / sx prop)
 ```
 
 ---
@@ -208,7 +208,7 @@ if (!data?.length) return (
 |-----------|----------|
 | UI spec status ≠ Approved | Refuse and explain |
 | OpenAPI schema not found for an endpoint | Flag as a gap — do not invent a shape |
-| UI spec mentions a component not in shadcn/ui | Use the closest shadcn/ui equivalent and note the deviation |
+| UI spec mentions a component not in MUI | Use the closest MUI equivalent and note the deviation |
 | TypeScript type cannot be derived from OpenAPI schema | Use `unknown` and add a comment |
 
 ---
@@ -273,7 +273,7 @@ Generate the following files for the {Feature} module:
 7. frontend/src/features/{feature}/schemas.ts
 8. frontend/src/features/{feature}/types.ts
 
-Stack: React 18, TypeScript, TanStack Query v5, React Hook Form, Zod, shadcn/ui.
+Stack: React 18, TypeScript, TanStack Query v5, React Hook Form, Zod, MUI (@mui/material v5).
 Run through all quality gates before producing the final output.
 Output each file with its full path as a header.
 No preamble.

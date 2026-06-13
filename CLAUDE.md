@@ -65,7 +65,7 @@ Requirement
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 18, TypeScript, Vite, TanStack Query v5, React Hook Form, Zod, shadcn/ui, Tailwind CSS |
+| Frontend | React 18, TypeScript, Vite, TanStack Query v5, React Hook Form, Zod, MUI (@mui/material v5), Emotion |
 | Backend | Fastify v4, TypeScript, Drizzle ORM, Zod |
 | Database | Neon (PostgreSQL serverless) |
 | Auth | JWT (24h TTL, localStorage — ADR-003) |

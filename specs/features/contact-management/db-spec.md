@@ -1,5 +1,9 @@
 # DB Spec: Contact Management
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 ---
 
 ## 1. Entity Overview

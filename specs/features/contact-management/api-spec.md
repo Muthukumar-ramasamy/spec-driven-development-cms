@@ -1,5 +1,9 @@
 # API Spec: Contact Management
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 Full OpenAPI definition: `specs/api/openapi.yaml`
 
 ---

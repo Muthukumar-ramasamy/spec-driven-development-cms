@@ -107,16 +107,14 @@ frontend/
 │   │   ├── auth.ts               ← getToken / setToken / clearToken (localStorage)
 │   │   └── queryClient.ts        ← TanStack QueryClient config
 │   ├── components/
-│   │   ├── ui/                   ← shadcn/ui component re-exports
 │   │   ├── ProtectedRoute.tsx    ← Redirects to /login if no token
-│   │   ├── AppLayout.tsx         ← Sidebar (240px) + main content layout
-│   │   └── AuthLayout.tsx        ← Centered card layout for auth pages
+│   │   ├── AppLayout.tsx         ← MUI Drawer (240px) + main content layout
+│   │   └── AuthLayout.tsx        ← Centered Box layout for auth pages (MUI)
 │   ├── hooks/
 │   │   └── useAuth.ts            ← Returns decoded JWT payload (user, role, orgId)
 │   └── features/                 ← Feature modules (one per /implement-feature run)
 ├── index.html
 ├── vite.config.ts
-├── tailwind.config.ts
 ├── tsconfig.json
 ├── package.json
 └── .env.example

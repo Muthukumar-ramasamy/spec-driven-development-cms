@@ -19,7 +19,7 @@
 | Server state | TanStack Query | v5 |
 | Forms | React Hook Form | v7 |
 | Validation | Zod | v3 |
-| UI components | shadcn/ui (Radix UI + Tailwind CSS) | latest |
+| UI components | MUI (@mui/material v5) + Emotion | latest |
 | HTTP client | Axios | v1 |
 | Auth token | localStorage | — |
 
@@ -40,7 +40,7 @@ frontend/
 │   │   └── utils.ts              # cn(), date formatters, currency formatter
 │   │
 │   ├── components/
-│   │   └── ui/                   # shadcn/ui generated components (Button, Input, etc.)
+│   │   └── ui/                   # Shared MUI wrapper components (layout helpers, etc.)
 │   │
 │   ├── layouts/
 │   │   ├── AuthLayout.tsx        # Centred card — used for login, signup, reset
@@ -100,7 +100,6 @@ frontend/
 │
 ├── index.html
 ├── vite.config.ts
-├── tailwind.config.ts
 ├── tsconfig.json
 └── package.json
 ```

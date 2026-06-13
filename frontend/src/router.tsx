@@ -3,6 +3,10 @@ import { AuthLayout } from './components/AuthLayout'
 import { AppLayout } from './components/AppLayout'
 import { ProtectedRoute } from './components/ProtectedRoute'
 
+// Contact Management pages
+import ContactsPage from './features/contact-management/pages/ContactsPage'
+import ContactDetailPage from './features/contact-management/pages/ContactDetailPage'
+
 // Auth pages
 import LoginPage from './features/auth/pages/LoginPage'
 import SignupPage from './features/auth/pages/SignupPage'
@@ -33,6 +37,8 @@ export const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { path: '/settings/users', element: <UsersPage /> },
+          { path: '/contacts', element: <ContactsPage /> },
+          { path: '/contacts/:id', element: <ContactDetailPage /> },
           // Additional feature routes registered below by /implement-feature
         ],
       },

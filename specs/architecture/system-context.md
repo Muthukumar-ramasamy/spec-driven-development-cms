@@ -68,7 +68,7 @@ A three-tier web application: a React SPA served as static files, a Fastify REST
 | Routing | React Router v6 (client-side) |
 | Server state | TanStack Query v5 |
 | Forms | React Hook Form + Zod |
-| UI components | shadcn/ui (Radix UI primitives + Tailwind CSS) |
+| UI components | MUI (@mui/material v5) + Emotion |
 | Auth token storage | `localStorage` (JWT access token) |
 
 The SPA communicates exclusively with the API over HTTPS/JSON. It has no direct database access.

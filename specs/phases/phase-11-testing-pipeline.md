@@ -1,4 +1,4 @@
-# Phase 11 — Testing Pipeline
+ # Phase 11 — Testing Pipeline
 
 **Status**: ✅ Complete  
 **Goal**: Configure the full test stack (unit → integration → E2E) so `/generate-tests` has a working infrastructure to write into.

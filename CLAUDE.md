@@ -45,6 +45,7 @@ Requirement
 | `/implement-feature {Name}` | Run Backend + Frontend agents → all code |
 | `/generate-tests {Name}` | Run QA agent → unit + integration + E2E tests |
 | `/review-feature {Name}` | Audit implementation against specs → review.md |
+| `/generate-docs` | Generate API reference, feature summaries, DB schema doc |
 
 ---
 

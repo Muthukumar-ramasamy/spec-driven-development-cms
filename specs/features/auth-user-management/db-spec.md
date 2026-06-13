@@ -1,5 +1,9 @@
 # DB Spec: Auth & User Management
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 ---
 
 ## 1. Entities Overview

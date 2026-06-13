@@ -1,5 +1,9 @@
 # API Spec: Auth & User Management
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 Full OpenAPI definition: `specs/api/openapi.yaml`
 
 ---

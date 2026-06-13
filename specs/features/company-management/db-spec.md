@@ -1,5 +1,9 @@
 # DB Spec: Company Management
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 Full entity spec: `specs/database/entities/company.md`
 
 ---

@@ -39,133 +39,111 @@ If any spec is missing or not Approved, stop immediately:
 
 ---
 
-## Step 1 — Backend Agent: All backend files
+## Step 1 — Run Backend and Frontend Agents IN PARALLEL
 
-**Read these files in order:**
-1. `agents/backend-agent.md`
-2. `specs/features/{feature-slug}/feature-spec.md`
-3. `specs/features/{feature-slug}/db-spec.md`
-4. `specs/features/{feature-slug}/api-spec.md`
-5. `specs/api/openapi.yaml` (relevant sections)
-6. `specs/architecture/backend.md`
-7. `specs/architecture/security.md`
+Backend and frontend write to completely separate directory trees (`backend/src/modules/` vs
+`frontend/src/features/`) — there is zero file conflict risk. Spawn both subagents in the
+**same response message** using two Agent tool calls so they run simultaneously.
 
-**Produce** (all at once — the backend agent owns the full module):
+Do NOT call them sequentially. Do NOT wait for one before starting the other.
+
+---
+
+### Agent A — Backend Agent
+
+**Prompt** (self-contained — the subagent has no parent context):
+
 ```
-backend/src/modules/{feature-slug}/
-├── routes.ts
-├── controller.ts
-├── service.ts
-├── repository.ts
-└── schemas.ts
+You are the Backend Agent for a Spec-Driven Development CRM project.
 
-backend/src/db/schema/{entity}.ts
+Feature to implement: {FeatureName} (kebab slug: {feature-slug})
 
-backend/drizzle/
-└── {YYYYMMDDHHMMSS}_create_{entity}.sql
-```
+Read these files in order before writing anything:
+1. agents/backend-agent.md           ← full instructions, quality gates, invariants
+2. specs/features/{feature-slug}/feature-spec.md
+3. specs/features/{feature-slug}/db-spec.md
+4. specs/features/{feature-slug}/api-spec.md
+5. specs/api/openapi.yaml            ← scan for /{feature-slug} paths only
+6. specs/architecture/backend.md
+7. specs/architecture/security.md
 
-**Backend Agent quality gates** — verify ALL before writing any file:
-```
-MULTI-TENANCY (CRITICAL — verify first)
-[ ] organization_id on EVERY query — no exceptions
-[ ] organization_id from JWT only — never from req.body or req.params
-[ ] No query can touch records from another tenant
+Write ALL of these files (do not skip any):
+  backend/src/modules/{feature-slug}/routes.ts
+  backend/src/modules/{feature-slug}/controller.ts
+  backend/src/modules/{feature-slug}/service.ts
+  backend/src/modules/{feature-slug}/repository.ts
+  backend/src/modules/{feature-slug}/schemas.ts
+  backend/src/db/schema/{entity}.ts
+  backend/drizzle/{YYYYMMDDHHMMSS}_create_{entity}.sql
 
-SOFT DELETE (CRITICAL)
-[ ] Every SELECT: WHERE deleted_at IS NULL
-[ ] Zero DELETE FROM statements — only soft delete via deleted_at = NOW()
+Non-negotiable invariants (enforced before writing any file):
+- organization_id on EVERY query — from JWT only, never req.body/req.params
+- isNull(deletedAt) on EVERY SELECT
+- Zero DELETE FROM — soft delete only (deletedAt = NOW())
+- UUID PKs (uuid().defaultRandom()) — no integers
+- 4-layer separation: routes → controller → service → repository (no skipping)
+- Every BR-NN from feature-spec.md enforced in service.ts
+- authenticate preHandler on every route
 
-UUID KEYS
-[ ] All PKs: uuid().defaultRandom() — no serial / integer PKs
-[ ] All FK columns: uuid type
-
-LAYER SEPARATION
-[ ] routes.ts: register routes, attach schemas, call controller only
-[ ] controller.ts: parse request, call service, format response — no logic
-[ ] service.ts: business logic + RBAC — no DB queries
-[ ] repository.ts: Drizzle queries only — no business logic
-
-BUSINESS RULES
-[ ] Every BR-NN from feature-spec.md has a check in service.ts
-
-RESPONSE FORMAT
-[ ] Success: { data } or { data, pagination }
-[ ] Error: { error, message, details }
-[ ] 200 GET, 201 POST create, 200 PUT, 200 soft-delete
-[ ] 400 validation, 401 auth, 403 role, 404 not found, 409 conflict, 422 business rule
-
-SECURITY
-[ ] JWT preHandler on every protected route
-[ ] No secrets / passwords / tokens logged
-[ ] No user input in raw SQL strings
+When done, reply with a checklist confirming each quality gate passed.
 ```
 
 ---
 
-## Step 2 — Frontend Agent: All frontend files
+### Agent B — Frontend Agent
 
-**Read these files in order:**
-1. `agents/frontend-agent.md`
-2. `specs/features/{feature-slug}/feature-spec.md`
-3. `specs/features/{feature-slug}/ui-spec.md`
-4. `specs/api/openapi.yaml` (relevant sections)
-5. `specs/architecture/frontend.md`
-6. `specs/architecture/security.md`
+**Prompt** (self-contained — the subagent has no parent context):
 
-**Produce** (all at once — the frontend agent owns the full module):
 ```
-frontend/src/features/{feature-slug}/
-├── pages/
-│   └── {EntityName}Page.tsx
-├── components/
-│   ├── {Entity}Table.tsx
-│   ├── {Entity}Form.tsx
-│   └── {Entity}Detail.tsx        (if detail page in ui-spec)
-├── hooks/
-│   ├── use{Entity}s.ts
-│   ├── use{Entity}.ts             (if detail page needed)
-│   └── use{Entity}Mutations.ts
-├── api.ts
-├── schemas.ts
-└── types.ts
-```
+You are the Frontend Agent for a Spec-Driven Development CRM project.
 
-**Frontend Agent quality gates** — verify ALL before writing any file:
-```
-ARCHITECTURE
-[ ] No hardcoded API URLs — all via src/lib/api.ts Axios instance
-[ ] No direct fetch() calls
-[ ] All imports use folder aliases
+Feature to implement: {FeatureName} (kebab slug: {feature-slug})
 
-TYPE SAFETY
-[ ] Zero TypeScript `any` types
-[ ] All API response shapes match openapi.yaml
-[ ] Zod schemas match OpenAPI request body schemas exactly
+Read these files in order before writing anything:
+1. agents/frontend-agent.md          ← full instructions, quality gates, MUI patterns
+2. specs/features/{feature-slug}/feature-spec.md
+3. specs/features/{feature-slug}/ui-spec.md
+4. specs/api/openapi.yaml            ← scan for /{feature-slug} paths only
+5. specs/architecture/frontend.md
+6. specs/architecture/security.md
 
-DATA FETCHING
-[ ] Every useQuery: stable queryKey includes all filter params
-[ ] Every list query: isLoading → skeleton, isError → error state, empty → empty state
-[ ] Every mutation: invalidateQueries on success
+Also read these existing files to match established patterns:
+  frontend/src/lib/api.ts            ← Axios instance — all API calls use this
+  frontend/src/hooks/useAuth.ts      ← useAuth() shape: { sub, organizationId, role }
+  frontend/src/router.tsx            ← existing routes (do NOT edit this file)
+  frontend/src/features/contact-management/pages/ContactsPage.tsx  ← MUI pattern reference
 
-FORMS
-[ ] All forms: React Hook Form + zodResolver
-[ ] Required fields show inline error when submitted empty
-[ ] Submit button disabled + spinner while mutation is pending
-[ ] Success: close form, toast, invalidate list
-[ ] API error 409: inline conflict error (not just a toast)
+Write ALL of these files (do not skip any):
+  frontend/src/features/{feature-slug}/types.ts
+  frontend/src/features/{feature-slug}/schemas.ts
+  frontend/src/features/{feature-slug}/api.ts
+  frontend/src/features/{feature-slug}/hooks/use{Entity}s.ts
+  frontend/src/features/{feature-slug}/hooks/use{Entity}.ts        (if detail page in ui-spec)
+  frontend/src/features/{feature-slug}/hooks/use{Entity}Mutations.ts
+  frontend/src/features/{feature-slug}/components/{Entity}Table.tsx
+  frontend/src/features/{feature-slug}/components/{Entity}Form.tsx
+  frontend/src/features/{feature-slug}/pages/{Entity}Page.tsx
+  frontend/src/features/{feature-slug}/pages/{Entity}DetailPage.tsx (if detail page in ui-spec)
 
-PERMISSIONS
-[ ] Role-restricted elements HIDDEN — never just disabled
-[ ] useAuth() for role — no hardcoded role strings in components
+Non-negotiable invariants:
+- MUI (@mui/material v5) + Emotion — NO Tailwind, NO shadcn
+- All API calls via `api` from ../../lib/api — no hardcoded URLs, no fetch()
+- All role checks via useAuth() — no hardcoded role strings
+- Role-restricted elements HIDDEN — never just disabled
+- RHF pattern for MUI TextFields: destructure ref → pass as inputRef
+- Every page handles: isLoading (CircularProgress), isError (Alert), empty state, success
+- Zero TypeScript `any`
 
-STATES
-[ ] Every page: loading, empty, error, success states all handled
+When done, reply with a checklist confirming each quality gate passed.
 ```
 
 ---
 
-## Step 3 — Route registration
+**After both agents complete**, proceed to Step 2.
+
+---
+
+## Step 2 — Route registration
 
 Update (append only — do not overwrite existing content):
 
@@ -185,7 +163,7 @@ Read both files first before editing to understand their current structure.
 
 ---
 
-## Step 4 — Summary
+## Step 3 — Summary
 
 Print:
 ```

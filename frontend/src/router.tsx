@@ -3,6 +3,10 @@ import { AuthLayout } from './components/AuthLayout'
 import { AppLayout } from './components/AppLayout'
 import { ProtectedRoute } from './components/ProtectedRoute'
 
+// Company Management pages
+import CompaniesPage from './features/company-management/pages/CompaniesPage'
+import CompanyDetailPage from './features/company-management/pages/CompanyDetailPage'
+
 // Contact Management pages
 import ContactsPage from './features/contact-management/pages/ContactsPage'
 import ContactDetailPage from './features/contact-management/pages/ContactDetailPage'
@@ -39,6 +43,8 @@ export const router = createBrowserRouter([
           { path: '/settings/users', element: <UsersPage /> },
           { path: '/contacts', element: <ContactsPage /> },
           { path: '/contacts/:id', element: <ContactDetailPage /> },
+          { path: '/companies', element: <CompaniesPage /> },
+          { path: '/companies/:id', element: <CompanyDetailPage /> },
           // Additional feature routes registered below by /implement-feature
         ],
       },

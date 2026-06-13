@@ -1,5 +1,9 @@
 # API Spec: Company Management
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 Full OpenAPI definition: `specs/api/openapi.yaml`
 
 ---
@@ -13,6 +17,20 @@ Full OpenAPI definition: `specs/api/openapi.yaml`
 | GET | /api/companies/:id | Get company detail (with contacts, deals) | Yes | All |
 | PUT | /api/companies/:id | Update company | Yes | All (own) / Manager / Admin |
 | DELETE | /api/companies/:id | Soft-delete company | Yes | Admin only |
+
+---
+
+## Query Parameters — GET /api/companies
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| page | integer | 1 | Page number |
+| limit | integer | 20 | Records per page (max 100) |
+| sort | string | `created_at` | Column to sort by (`created_at`, `name`) |
+| order | `asc` \| `desc` | `desc` | Sort direction |
+| search | string | — | Case-insensitive match on company name |
+
+Response: `200 { "data": [ Company ], "pagination": { page, limit, total, totalPages } }`
 
 ---
 

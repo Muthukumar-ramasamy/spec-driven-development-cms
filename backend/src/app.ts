@@ -5,6 +5,7 @@ import { ZodError } from 'zod'
 import { config } from './config'
 import { authUserManagementRoutes } from './modules/auth-user-management/routes'
 import { contactManagementRoutes } from './modules/contact-management/routes'
+import { companyManagementRoutes } from './modules/company-management/routes'
 
 export function buildApp() {
   const app = Fastify({ logger: true })
@@ -46,6 +47,7 @@ export function buildApp() {
   // Feature modules
   app.register(authUserManagementRoutes, { prefix: '/api' })
   app.register(contactManagementRoutes, { prefix: '/api' })
+  app.register(companyManagementRoutes, { prefix: '/api' })
 
   return app
 }

@@ -4,121 +4,227 @@
 
 **Example**: `/implement-feature LeadManagement`
 
+Feature name → kebab slug: `LeadManagement` → `lead-management`
+
 ---
 
 ## What this command does
 
-Reads the approved spec bundle for a feature and generates all application code —
-backend (controller, service, repository, migration) and frontend (page, components, hooks).
+Reads the approved spec bundle and generates all application code:
+- Backend: Drizzle schema, migration, routes, controller, service, repository, Zod schemas
+- Frontend: types, Zod schemas, API client, hooks, components, page
+- Route registration: wires the new module into the app
 
-**Pre-condition**: The spec bundle must exist and be approved before running this command.
-Check that `specs/features/{feature}/feature-spec.md` exists and has `Status: Approved`.
+**Pre-condition**: All three specs must be Status: Approved before any code is written.
 
 ---
 
-## Steps
+## Step 0 — Pre-flight check
 
-### Step 0 — Pre-flight check
-Verify these files exist:
-- `specs/features/{feature}/feature-spec.md` — Status must be "Approved"
-- `specs/features/{feature}/db-spec.md`
-- `specs/features/{feature}/api-spec.md`
-- `specs/features/{feature}/ui-spec.md`
-- `specs/features/{feature}/test-spec.md`
+Read these files and verify:
 
-If any are missing or not approved: stop and report what is missing.
+```
+specs/features/{feature-slug}/feature-spec.md  → Status must be "Approved"
+specs/features/{feature-slug}/db-spec.md        → Status must be "Approved"
+specs/features/{feature-slug}/api-spec.md       → Status must be "Approved"
+specs/features/{feature-slug}/ui-spec.md        → must exist
+specs/api/openapi.yaml                          → must exist
+specs/architecture/backend.md                  → must exist
+specs/architecture/frontend.md                 → must exist
+specs/architecture/security.md                 → must exist
+```
 
-### Step 1 — Backend: Database migration
-Read: `agents/backend-agent.md`
-Read: `specs/features/{feature}/db-spec.md`
+If any spec is missing or not Approved, stop immediately:
+> "Pre-flight failed: {spec path} has Status: {status}. Set to Approved before running /implement-feature."
 
-Produce:
-- `backend/src/database/migrations/{timestamp}_create_{table}.sql`
-- `backend/src/database/seeds/{table}.seed.ts`
+---
 
-### Step 2 — Backend: Types and validation
-Read: `specs/features/{feature}/db-spec.md`
-Read: `specs/features/{feature}/api-spec.md`
+## Step 1 — Backend Agent: All backend files
 
-Produce:
-- `backend/src/features/{feature}/{feature}.types.ts`
-- `backend/src/features/{feature}/{feature}.validation.ts`
+**Read these files in order:**
+1. `agents/backend-agent.md`
+2. `specs/features/{feature-slug}/feature-spec.md`
+3. `specs/features/{feature-slug}/db-spec.md`
+4. `specs/features/{feature-slug}/api-spec.md`
+5. `specs/api/openapi.yaml` (relevant sections)
+6. `specs/architecture/backend.md`
+7. `specs/architecture/security.md`
 
-### Step 3 — Backend: Repository
-Read: `agents/backend-agent.md`
-Read: `specs/features/{feature}/db-spec.md`
-Read: the types file from Step 2
+**Produce** (all at once — the backend agent owns the full module):
+```
+backend/src/modules/{feature-slug}/
+├── routes.ts
+├── controller.ts
+├── service.ts
+├── repository.ts
+└── schemas.ts
 
-Produce:
-- `backend/src/features/{feature}/{feature}.repository.ts`
+backend/src/db/schema/{entity}.ts
 
-### Step 4 — Backend: Service
-Read: `agents/backend-agent.md`
-Read: `specs/features/{feature}/feature-spec.md` (business rules section)
-Read: the repository from Step 3
+backend/drizzle/
+└── {YYYYMMDDHHMMSS}_create_{entity}.sql
+```
 
-Produce:
-- `backend/src/features/{feature}/{feature}.service.ts`
+**Backend Agent quality gates** — verify ALL before writing any file:
+```
+MULTI-TENANCY (CRITICAL — verify first)
+[ ] organization_id on EVERY query — no exceptions
+[ ] organization_id from JWT only — never from req.body or req.params
+[ ] No query can touch records from another tenant
 
-### Step 5 — Backend: Controller + Routes
-Read: `agents/backend-agent.md`
-Read: `specs/features/{feature}/api-spec.md`
-Read: the service from Step 4
+SOFT DELETE (CRITICAL)
+[ ] Every SELECT: WHERE deleted_at IS NULL
+[ ] Zero DELETE FROM statements — only soft delete via deleted_at = NOW()
 
-Produce:
-- `backend/src/features/{feature}/{feature}.controller.ts`
-- `backend/src/features/{feature}/{feature}.routes.ts`
+UUID KEYS
+[ ] All PKs: uuid().defaultRandom() — no serial / integer PKs
+[ ] All FK columns: uuid type
 
-### Step 6 — Frontend: Types and API client
-Read: `specs/features/{feature}/api-spec.md`
+LAYER SEPARATION
+[ ] routes.ts: register routes, attach schemas, call controller only
+[ ] controller.ts: parse request, call service, format response — no logic
+[ ] service.ts: business logic + RBAC — no DB queries
+[ ] repository.ts: Drizzle queries only — no business logic
 
-Produce:
-- `frontend/src/features/{feature}/types/{feature}.types.ts`
-- `frontend/src/features/{feature}/lib/{feature}.api.ts`
+BUSINESS RULES
+[ ] Every BR-NN from feature-spec.md has a check in service.ts
 
-### Step 7 — Frontend: Hooks
-Read: `agents/frontend-agent.md`
-Read: the API client from Step 6
+RESPONSE FORMAT
+[ ] Success: { data } or { data, pagination }
+[ ] Error: { error, message, details }
+[ ] 200 GET, 201 POST create, 200 PUT, 200 soft-delete
+[ ] 400 validation, 401 auth, 403 role, 404 not found, 409 conflict, 422 business rule
 
-Produce:
-- `frontend/src/features/{feature}/hooks/use{Entity}s.ts`
-- `frontend/src/features/{feature}/hooks/use{Entity}.ts`
-- `frontend/src/features/{feature}/hooks/use{Entity}Mutations.ts`
+SECURITY
+[ ] JWT preHandler on every protected route
+[ ] No secrets / passwords / tokens logged
+[ ] No user input in raw SQL strings
+```
 
-### Step 8 — Frontend: Components and Page
-Read: `agents/frontend-agent.md`
-Read: `specs/features/{feature}/ui-spec.md`
-Read: the hooks from Step 7
+---
 
-Produce:
-- `frontend/src/features/{feature}/components/{Entity}Table.tsx`
-- `frontend/src/features/{feature}/components/{Entity}Form.tsx`
-- `frontend/src/features/{feature}/pages/{Entity}ListPage.tsx`
+## Step 2 — Frontend Agent: All frontend files
 
-### Step 9 — Register routes
-Update (do not overwrite):
-- `backend/src/app.ts` — register new feature routes
-- `frontend/src/router.tsx` — register new page routes
+**Read these files in order:**
+1. `agents/frontend-agent.md`
+2. `specs/features/{feature-slug}/feature-spec.md`
+3. `specs/features/{feature-slug}/ui-spec.md`
+4. `specs/api/openapi.yaml` (relevant sections)
+5. `specs/architecture/frontend.md`
+6. `specs/architecture/security.md`
 
-### Step 10 — Summary
+**Produce** (all at once — the frontend agent owns the full module):
+```
+frontend/src/features/{feature-slug}/
+├── pages/
+│   └── {EntityName}Page.tsx
+├── components/
+│   ├── {Entity}Table.tsx
+│   ├── {Entity}Form.tsx
+│   └── {Entity}Detail.tsx        (if detail page in ui-spec)
+├── hooks/
+│   ├── use{Entity}s.ts
+│   ├── use{Entity}.ts             (if detail page needed)
+│   └── use{Entity}Mutations.ts
+├── api.ts
+├── schemas.ts
+└── types.ts
+```
+
+**Frontend Agent quality gates** — verify ALL before writing any file:
+```
+ARCHITECTURE
+[ ] No hardcoded API URLs — all via src/lib/api.ts Axios instance
+[ ] No direct fetch() calls
+[ ] All imports use folder aliases
+
+TYPE SAFETY
+[ ] Zero TypeScript `any` types
+[ ] All API response shapes match openapi.yaml
+[ ] Zod schemas match OpenAPI request body schemas exactly
+
+DATA FETCHING
+[ ] Every useQuery: stable queryKey includes all filter params
+[ ] Every list query: isLoading → skeleton, isError → error state, empty → empty state
+[ ] Every mutation: invalidateQueries on success
+
+FORMS
+[ ] All forms: React Hook Form + zodResolver
+[ ] Required fields show inline error when submitted empty
+[ ] Submit button disabled + spinner while mutation is pending
+[ ] Success: close form, toast, invalidate list
+[ ] API error 409: inline conflict error (not just a toast)
+
+PERMISSIONS
+[ ] Role-restricted elements HIDDEN — never just disabled
+[ ] useAuth() for role — no hardcoded role strings in components
+
+STATES
+[ ] Every page: loading, empty, error, success states all handled
+```
+
+---
+
+## Step 3 — Route registration
+
+Update (append only — do not overwrite existing content):
+
+**Backend** — `backend/src/app.ts`:
+```typescript
+// Add to the route registration block
+fastify.register(import('./modules/{feature-slug}/routes'), { prefix: '/api' })
+```
+
+**Frontend** — `frontend/src/router.tsx`:
+```typescript
+// Add to the route definitions
+{ path: '/{route}', element: <ProtectedRoute><{EntityName}Page /></ProtectedRoute> }
+```
+
+Read both files first before editing to understand their current structure.
+
+---
+
+## Step 4 — Summary
+
+Print:
 ```
 ✅ Implementation complete for: {FeatureName}
 
 Backend files:
-  backend/src/features/{feature}/
+  backend/src/modules/{feature-slug}/routes.ts
+  backend/src/modules/{feature-slug}/controller.ts
+  backend/src/modules/{feature-slug}/service.ts
+  backend/src/modules/{feature-slug}/repository.ts
+  backend/src/modules/{feature-slug}/schemas.ts
+  backend/src/db/schema/{entity}.ts
+  backend/drizzle/{timestamp}_create_{entity}.sql
 
 Frontend files:
-  frontend/src/features/{feature}/
+  frontend/src/features/{feature-slug}/pages/{EntityName}Page.tsx
+  frontend/src/features/{feature-slug}/components/...
+  frontend/src/features/{feature-slug}/hooks/...
+  frontend/src/features/{feature-slug}/api.ts
+  frontend/src/features/{feature-slug}/schemas.ts
+  frontend/src/features/{feature-slug}/types.ts
 
-Next step: Run /generate-tests {FeatureName}
+Routes registered:
+  backend/src/app.ts — ✅ updated
+  frontend/src/router.tsx — ✅ updated
+
+Next step: /generate-tests {FeatureName}
 ```
 
 ---
 
 ## Rules
 
-- Follow the exact layer separation in the Backend Agent definition
-- Do not put business logic in controllers
-- Do not put SQL in services
-- Every file must have TypeScript types — no `any`
-- Do not modify files outside the feature folder (except route registration)
+- Never write code before all three specs are Approved — stop and report what is missing
+- All backend files in `backend/src/modules/{feature-slug}/` — never `backend/src/features/`
+- All frontend files in `frontend/src/features/{feature-slug}/`
+- Never put business logic in controller.ts — it belongs in service.ts
+- Never put DB queries in service.ts — they belong in repository.ts
+- Never use DELETE FROM — always set deleted_at = NOW()
+- Never read organization_id from req.body or req.params — always from req.user.organizationId (JWT)
+- No TypeScript `any` in any generated file
+- When updating route registration files, read them first, then append — never overwrite

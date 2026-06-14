@@ -9,7 +9,7 @@ export function useLogin() {
     mutationFn: authApi.login,
     onSuccess: (data) => {
       setToken(data.token)
-      navigate('/deals')
+      navigate('/contacts')
     },
   })
 }
@@ -20,7 +20,7 @@ export function useSignup() {
     mutationFn: authApi.signup,
     onSuccess: (data) => {
       setToken(data.token)
-      navigate('/deals')
+      navigate('/contacts')
     },
   })
 }

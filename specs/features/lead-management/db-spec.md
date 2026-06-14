@@ -1,5 +1,9 @@
 # DB Spec: Lead Management
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 Full entity spec: `specs/database/entities/lead.md`
 
 ---
@@ -22,6 +26,18 @@ Full entity spec: `specs/database/entities/lead.md`
 | created_at | TIMESTAMPTZ | Yes | |
 | updated_at | TIMESTAMPTZ | Yes | |
 | deleted_at | TIMESTAMPTZ | No | Soft delete |
+
+---
+
+## Relationships
+
+| From | To | FK | On delete |
+|------|----|----|-----------|
+| Lead | Organization | organization_id | CASCADE |
+| Lead | User (owner) | owner_id | RESTRICT |
+| Lead | Contact | contact_id | SET NULL |
+| Lead | Company | company_id | SET NULL |
+| Lead | Deal (converted) | converted_deal_id | SET NULL (added via ALTER TABLE after deals table exists) |
 
 ---
 

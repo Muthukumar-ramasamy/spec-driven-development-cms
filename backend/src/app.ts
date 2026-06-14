@@ -6,12 +6,23 @@ import { config } from './config'
 import { authUserManagementRoutes } from './modules/auth-user-management/routes'
 import { contactManagementRoutes } from './modules/contact-management/routes'
 import { companyManagementRoutes } from './modules/company-management/routes'
+import { leadManagementRoutes } from './modules/lead-management/routes'
 
 export function buildApp() {
   const app = Fastify({ logger: true })
 
   app.register(fastifyCors, {
-    origin: config.FRONTEND_URL,
+    origin: (origin, cb) => {
+      // Allow requests with no origin (curl, Postman, server-to-server)
+      if (!origin) return cb(null, true)
+      // Allow any localhost port in development
+      if (config.NODE_ENV !== 'production' && /^https?:\/\/localhost(:\d+)?$/.test(origin)) {
+        return cb(null, true)
+      }
+      // In production, restrict to configured FRONTEND_URL only
+      if (origin === config.FRONTEND_URL) return cb(null, true)
+      cb(new Error('Not allowed by CORS'), false)
+    },
     credentials: true,
   })
 
@@ -48,6 +59,7 @@ export function buildApp() {
   app.register(authUserManagementRoutes, { prefix: '/api' })
   app.register(contactManagementRoutes, { prefix: '/api' })
   app.register(companyManagementRoutes, { prefix: '/api' })
+  app.register(leadManagementRoutes, { prefix: '/api' })
 
   return app
 }

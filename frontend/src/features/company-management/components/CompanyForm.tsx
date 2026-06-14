@@ -3,13 +3,26 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Alert,
+  Avatar,
   Box,
   Button,
   CircularProgress,
+  Divider,
   Drawer,
+  IconButton,
+  InputAdornment,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
+import {
+  BusinessOutlined,
+  Close,
+  LanguageOutlined,
+  CategoryOutlined,
+  PeopleOutlined,
+  NotesOutlined,
+} from '@mui/icons-material'
 import { AxiosError } from 'axios'
 import { useCompanyMutations } from '../hooks/useCompanyMutations'
 import { createCompanySchema, CreateCompanyFormValues } from '../schemas'
@@ -33,10 +46,13 @@ export function CompanyForm({ open, onClose, editCompany }: Props) {
     handleSubmit,
     reset,
     setError,
+    watch,
     formState: { errors },
   } = useForm<CreateCompanyFormValues>({
     resolver: zodResolver(createCompanySchema),
   })
+
+  const nameValue = watch('name') ?? editCompany?.name ?? ''
 
   useEffect(() => {
     if (open && editCompany) {
@@ -73,16 +89,10 @@ export function CompanyForm({ open, onClose, editCompany }: Props) {
     if (isEdit) {
       update.mutate(
         { id: editCompany!.id, data: values },
-        {
-          onSuccess: onClose,
-          onError: handleApiError,
-        },
+        { onSuccess: onClose, onError: handleApiError },
       )
     } else {
-      create.mutate(values, {
-        onSuccess: onClose,
-        onError: handleApiError,
-      })
+      create.mutate(values, { onSuccess: onClose, onError: handleApiError })
     }
   }
 
@@ -99,91 +109,200 @@ export function CompanyForm({ open, onClose, editCompany }: Props) {
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { width: 420, p: 3 } }}
+      PaperProps={{ sx: { width: 440, display: 'flex', flexDirection: 'column' } }}
     >
-      <Typography variant="h6" fontWeight={600} gutterBottom>
-        {isEdit ? 'Edit company' : 'New company'}
-      </Typography>
+      {/* Header */}
+      <Box
+        sx={{
+          px: 3,
+          py: 2.5,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'grey.50',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.main' }}>
+            <BusinessOutlined fontSize="small" />
+          </Avatar>
+          <Box>
+            <Typography variant="subtitle1" fontWeight={700} lineHeight={1.2}>
+              {isEdit ? 'Edit company' : 'New company'}
+            </Typography>
+            {nameValue && (
+              <Typography variant="caption" color="text.secondary">
+                {nameValue}
+              </Typography>
+            )}
+          </Box>
+        </Box>
+        <Tooltip title="Close">
+          <IconButton size="small" onClick={onClose}>
+            <Close fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Box>
 
-      {serverError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {serverError}
-        </Alert>
-      )}
+      {/* Body */}
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        sx={{ flex: 1, overflowY: 'auto', px: 3, py: 3 }}
+      >
+        {serverError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {serverError}
+          </Alert>
+        )}
+        {conflictError && !errors.name && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {conflictError}
+          </Alert>
+        )}
 
-      {conflictError && !errors.name && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {conflictError}
-        </Alert>
-      )}
+        {/* Basic info */}
+        <Typography variant="overline" color="text.secondary" fontWeight={600}>
+          Basic information
+        </Typography>
 
-      <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <TextField
           label="Company name"
           required
           fullWidth
-          margin="normal"
+          size="small"
+          margin="dense"
           inputRef={nameRef}
           {...nameRest}
           error={!!errors.name}
           helperText={errors.name?.message}
+          sx={{ mt: 1 }}
         />
+
         <TextField
           label="Website"
           fullWidth
-          margin="normal"
+          size="small"
+          margin="dense"
           placeholder="https://example.com"
           inputRef={websiteRef}
           {...websiteRest}
           error={!!errors.website}
           helperText={errors.website?.message}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LanguageOutlined fontSize="small" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
+
+        <Divider sx={{ my: 2.5 }} />
+
+        {/* Company details */}
+        <Typography variant="overline" color="text.secondary" fontWeight={600}>
+          Company details
+        </Typography>
+
         <TextField
           label="Industry"
           fullWidth
-          margin="normal"
+          size="small"
+          margin="dense"
+          placeholder="e.g. Technology, Finance"
           inputRef={industryRef}
           {...industryRest}
           error={!!errors.industry}
           helperText={errors.industry?.message}
+          sx={{ mt: 1 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <CategoryOutlined fontSize="small" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
+
         <TextField
           label="Employee count"
           type="number"
           fullWidth
-          margin="normal"
+          size="small"
+          margin="dense"
           inputRef={employeeCountRef}
           {...employeeCountRest}
           inputProps={{ min: 0 }}
           error={!!errors.employeeCount}
           helperText={errors.employeeCount?.message}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <PeopleOutlined fontSize="small" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
+
+        <Divider sx={{ my: 2.5 }} />
+
+        {/* Notes */}
+        <Typography variant="overline" color="text.secondary" fontWeight={600}>
+          Notes
+        </Typography>
+
         <TextField
-          label="Notes"
           fullWidth
-          margin="normal"
+          size="small"
+          margin="dense"
           multiline
-          rows={3}
+          rows={4}
+          placeholder="Add any notes about this company…"
           inputRef={notesRef}
           {...notesRest}
           error={!!errors.notes}
           helperText={errors.notes?.message}
+          sx={{ mt: 1 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1 }}>
+                <NotesOutlined fontSize="small" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
+      </Box>
 
-        <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isPending}
-            startIcon={isPending ? <CircularProgress size={16} color="inherit" /> : undefined}
-            fullWidth
-          >
-            {isEdit ? 'Save changes' : 'Create company'}
-          </Button>
-          <Button onClick={onClose} variant="outlined" color="inherit" fullWidth>
-            Cancel
-          </Button>
-        </Box>
+      {/* Footer */}
+      <Box
+        sx={{
+          px: 3,
+          py: 2,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          display: 'flex',
+          gap: 1.5,
+          bgcolor: 'grey.50',
+        }}
+      >
+        <Button
+          type="submit"
+          form="company-form"
+          variant="contained"
+          disabled={isPending}
+          onClick={handleSubmit(onSubmit)}
+          startIcon={isPending ? <CircularProgress size={14} color="inherit" /> : undefined}
+          sx={{ flex: 1 }}
+        >
+          {isEdit ? 'Save changes' : 'Create company'}
+        </Button>
+        <Button onClick={onClose} variant="outlined" color="inherit" sx={{ flex: 1 }}>
+          Cancel
+        </Button>
       </Box>
     </Drawer>
   )

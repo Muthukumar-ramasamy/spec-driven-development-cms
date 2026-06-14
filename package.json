@@ -1,0 +1,10 @@
+{
+  "name": "crm",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --names BE,FE --prefix-colors cyan,magenta \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

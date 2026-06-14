@@ -3,13 +3,25 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Alert,
+  Avatar,
   Box,
   Button,
   CircularProgress,
+  Divider,
   Drawer,
+  IconButton,
+  InputAdornment,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
+import {
+  PersonOutlined,
+  Close,
+  EmailOutlined,
+  PhoneOutlined,
+  WorkOutlined,
+} from '@mui/icons-material'
 import { useContactMutations } from '../hooks/useContactMutations'
 import { createContactSchema, CreateContactFormValues } from '../schemas'
 import { getApiErrorMessage } from '../../../lib/api'
@@ -30,10 +42,15 @@ export function ContactForm({ open, onClose, editContact }: Props) {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<CreateContactFormValues>({
     resolver: zodResolver(createContactSchema),
   })
+
+  const firstName = watch('firstName') ?? editContact?.firstName ?? ''
+  const lastName = watch('lastName') ?? editContact?.lastName ?? ''
+  const displayName = [firstName, lastName].filter(Boolean).join(' ')
 
   useEffect(() => {
     if (open && editContact) {
@@ -81,75 +98,178 @@ export function ContactForm({ open, onClose, editContact }: Props) {
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { width: 420, p: 3 } }}
+      PaperProps={{ sx: { width: 440, display: 'flex', flexDirection: 'column' } }}
     >
-      <Typography variant="h6" fontWeight={600} gutterBottom>
-        {isEdit ? 'Edit contact' : 'New contact'}
-      </Typography>
+      {/* Header */}
+      <Box
+        sx={{
+          px: 3,
+          py: 2.5,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'grey.50',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Avatar sx={{ width: 36, height: 36, bgcolor: 'secondary.main' }}>
+            <PersonOutlined fontSize="small" />
+          </Avatar>
+          <Box>
+            <Typography variant="subtitle1" fontWeight={700} lineHeight={1.2}>
+              {isEdit ? 'Edit contact' : 'New contact'}
+            </Typography>
+            {displayName && (
+              <Typography variant="caption" color="text.secondary">
+                {displayName}
+              </Typography>
+            )}
+          </Box>
+        </Box>
+        <Tooltip title="Close">
+          <IconButton size="small" onClick={onClose}>
+            <Close fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Box>
 
-      {serverError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {serverError}
-        </Alert>
-      )}
+      {/* Body */}
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        sx={{ flex: 1, overflowY: 'auto', px: 3, py: 3 }}
+      >
+        {serverError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {serverError}
+          </Alert>
+        )}
 
-      <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <TextField
-          label="First name"
-          required
-          fullWidth
-          margin="normal"
-          inputRef={firstRef}
-          {...firstRest}
-          error={!!errors.firstName}
-          helperText={errors.firstName?.message}
-        />
-        <TextField
-          label="Last name"
-          fullWidth
-          margin="normal"
-          inputRef={lastRef}
-          {...lastRest}
-        />
+        {/* Name */}
+        <Typography variant="overline" color="text.secondary" fontWeight={600}>
+          Name
+        </Typography>
+
+        <Box sx={{ display: 'flex', gap: 1.5, mt: 1 }}>
+          <TextField
+            label="First name"
+            required
+            fullWidth
+            size="small"
+            margin="dense"
+            inputRef={firstRef}
+            {...firstRest}
+            error={!!errors.firstName}
+            helperText={errors.firstName?.message}
+          />
+          <TextField
+            label="Last name"
+            fullWidth
+            size="small"
+            margin="dense"
+            inputRef={lastRef}
+            {...lastRest}
+          />
+        </Box>
+
+        <Divider sx={{ my: 2.5 }} />
+
+        {/* Contact details */}
+        <Typography variant="overline" color="text.secondary" fontWeight={600}>
+          Contact details
+        </Typography>
+
         <TextField
           label="Email"
           type="email"
           fullWidth
-          margin="normal"
+          size="small"
+          margin="dense"
+          placeholder="name@company.com"
           inputRef={emailRef}
           {...emailRest}
           error={!!errors.email}
           helperText={errors.email?.message}
+          sx={{ mt: 1 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <EmailOutlined fontSize="small" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
+
         <TextField
           label="Phone"
           fullWidth
-          margin="normal"
+          size="small"
+          margin="dense"
+          placeholder="+1 (555) 000-0000"
           inputRef={phoneRef}
           {...phoneRest}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <PhoneOutlined fontSize="small" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
+
+        <Divider sx={{ my: 2.5 }} />
+
+        {/* Professional */}
+        <Typography variant="overline" color="text.secondary" fontWeight={600}>
+          Professional
+        </Typography>
+
         <TextField
           label="Job title"
           fullWidth
-          margin="normal"
+          size="small"
+          margin="dense"
+          placeholder="e.g. VP of Sales"
           inputRef={jobRef}
           {...jobRest}
+          sx={{ mt: 1 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <WorkOutlined fontSize="small" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
+      </Box>
 
-        <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isPending}
-            startIcon={isPending ? <CircularProgress size={16} color="inherit" /> : undefined}
-            fullWidth
-          >
-            {isEdit ? 'Save changes' : 'Create contact'}
-          </Button>
-          <Button onClick={onClose} variant="outlined" color="inherit" fullWidth>
-            Cancel
-          </Button>
-        </Box>
+      {/* Footer */}
+      <Box
+        sx={{
+          px: 3,
+          py: 2,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          display: 'flex',
+          gap: 1.5,
+          bgcolor: 'grey.50',
+        }}
+      >
+        <Button
+          variant="contained"
+          disabled={isPending}
+          onClick={handleSubmit(onSubmit)}
+          startIcon={isPending ? <CircularProgress size={14} color="inherit" /> : undefined}
+          sx={{ flex: 1 }}
+        >
+          {isEdit ? 'Save changes' : 'Create contact'}
+        </Button>
+        <Button onClick={onClose} variant="outlined" color="inherit" sx={{ flex: 1 }}>
+          Cancel
+        </Button>
       </Box>
     </Drawer>
   )

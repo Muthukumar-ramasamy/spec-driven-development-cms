@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
@@ -25,10 +25,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
 
-  if (user) {
-    navigate('/deals', { replace: true })
-    return null
-  }
+  useEffect(() => {
+    if (user) navigate('/contacts', { replace: true })
+  }, [user, navigate])
 
   const {
     register,

@@ -11,6 +11,9 @@ import CompanyDetailPage from './features/company-management/pages/CompanyDetail
 import ContactsPage from './features/contact-management/pages/ContactsPage'
 import ContactDetailPage from './features/contact-management/pages/ContactDetailPage'
 
+// Lead Management pages
+import LeadsPage from './features/lead-management/pages/LeadsPage'
+
 // Auth pages
 import LoginPage from './features/auth/pages/LoginPage'
 import SignupPage from './features/auth/pages/SignupPage'
@@ -45,12 +48,13 @@ export const router = createBrowserRouter([
           { path: '/contacts/:id', element: <ContactDetailPage /> },
           { path: '/companies', element: <CompaniesPage /> },
           { path: '/companies/:id', element: <CompanyDetailPage /> },
+          { path: '/leads', element: <LeadsPage /> },
           // Additional feature routes registered below by /implement-feature
         ],
       },
     ],
   },
 
-  { path: '/', element: <Navigate to="/deals" replace /> },
+  { path: '/', element: <Navigate to="/contacts" replace /> },
   { path: '*', element: <Navigate to="/login" replace /> },
 ])

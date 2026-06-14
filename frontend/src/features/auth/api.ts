@@ -9,7 +9,7 @@ export async function signup(data: {
   email: string
   password: string
 }): Promise<AuthResponse> {
-  const res = await api.post<{ data: AuthResponse }>('/api/auth/signup', data)
+  const res = await api.post<{ data: AuthResponse }>('/auth/signup', data)
   return res.data.data
 }
 
@@ -17,23 +17,23 @@ export async function login(data: {
   email: string
   password: string
 }): Promise<AuthResponse> {
-  const res = await api.post<{ data: AuthResponse }>('/api/auth/login', data)
+  const res = await api.post<{ data: AuthResponse }>('/auth/login', data)
   return res.data.data
 }
 
 export async function logout(): Promise<void> {
-  await api.post('/api/auth/logout')
+  await api.post('/auth/logout')
 }
 
 export async function forgotPassword(data: { email: string }): Promise<void> {
-  await api.post('/api/auth/forgot-password', data)
+  await api.post('/auth/forgot-password', data)
 }
 
 export async function resetPassword(data: {
   token: string
   password: string
 }): Promise<void> {
-  await api.post('/api/auth/reset-password', data)
+  await api.post('/auth/reset-password', data)
 }
 
 export async function acceptInvite(data: {
@@ -41,7 +41,7 @@ export async function acceptInvite(data: {
   name: string
   password: string
 }): Promise<AuthResponse> {
-  const res = await api.post<{ data: AuthResponse }>('/api/auth/accept-invite', data)
+  const res = await api.post<{ data: AuthResponse }>('/auth/accept-invite', data)
   return res.data.data
 }
 
@@ -56,7 +56,7 @@ export async function listUsers(params?: {
   sort?: string
   order?: string
 }): Promise<ListUsersResponse> {
-  const res = await api.get<ListUsersResponse>('/api/users', { params })
+  const res = await api.get<ListUsersResponse>('/users', { params })
   return res.data
 }
 
@@ -65,12 +65,12 @@ export async function inviteUser(data: {
   firstName?: string
   role: string
 }): Promise<User> {
-  const res = await api.post<{ data: User }>('/api/users/invite', data)
+  const res = await api.post<{ data: User }>('/users/invite', data)
   return res.data.data
 }
 
 export async function resendInvite(userId: string): Promise<User> {
-  const res = await api.post<{ data: User }>(`/api/users/${userId}/resend-invite`)
+  const res = await api.post<{ data: User }>(`/users/${userId}/resend-invite`)
   return res.data.data
 }
 
@@ -78,10 +78,10 @@ export async function updateUser(
   userId: string,
   data: { role?: string; status?: string },
 ): Promise<User> {
-  const res = await api.put<{ data: User }>(`/api/users/${userId}`, data)
+  const res = await api.put<{ data: User }>(`/users/${userId}`, data)
   return res.data.data
 }
 
 export async function deactivateUser(userId: string): Promise<void> {
-  await api.delete(`/api/users/${userId}`)
+  await api.delete(`/users/${userId}`)
 }

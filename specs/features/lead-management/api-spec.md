@@ -1,5 +1,9 @@
 # API Spec: Lead Management
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 Full OpenAPI definition: `specs/api/openapi.yaml`
 
 ---
@@ -17,7 +21,40 @@ Full OpenAPI definition: `specs/api/openapi.yaml`
 
 ---
 
+## Query Parameters — GET /api/leads
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| page | integer | 1 | Page number |
+| limit | integer | 20 | Records per page (max 100) |
+| sort | string | `created_at` | Column to sort by (`created_at`, `title`, `value`, `status`) |
+| order | `asc` \| `desc` | `desc` | Sort direction |
+| search | string | — | Case-insensitive match on lead title |
+| status | string | `new,contacted` | Comma-separated status filter (default excludes disqualified/converted) |
+| ownerId | uuid | — | Filter by owner (admin/manager only; sales rep always sees own) |
+
+Response: `200 { "data": [ Lead ], "pagination": { page, limit, total, totalPages } }`
+
+---
+
 ## Key Shapes
+
+### POST /api/leads
+```json
+Request:  { "title": "string (required)", "value": 0, "source": "string", "contactId": "uuid", "companyId": "uuid" }
+Response: 201 { "data": { Lead } }
+```
+
+### GET /api/leads/:id
+```json
+Response: 200 { "data": { Lead } }
+```
+
+### PUT /api/leads/:id
+```json
+Request:  { "title": "string", "value": 0, "status": "new|contacted|qualified|disqualified", "source": "string", "ownerId": "uuid" }
+Response: 200 { "data": { Lead } }
+```
 
 ### POST /api/leads/:id/convert
 ```json

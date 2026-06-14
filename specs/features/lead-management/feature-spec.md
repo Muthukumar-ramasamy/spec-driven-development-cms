@@ -9,7 +9,7 @@
 | Feature name | Lead Management |
 | Module | Module 4 |
 | Priority | P0 |
-| Status | Draft |
+| Status | Approved |
 | Author | Product Agent |
 | Created | 2026-06-13 |
 | Last updated | 2026-06-13 |

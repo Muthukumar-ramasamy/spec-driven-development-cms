@@ -17,3 +17,11 @@ export class UnprocessableError extends Error {
   statusCode = 422
   constructor(message: string) { super(message) }
 }
+
+export class ValidationError extends Error {
+  statusCode = 400
+  constructor(message: string) {
+    super(message)
+    this.name = 'ValidationError'
+  }
+}

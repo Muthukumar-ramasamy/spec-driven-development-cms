@@ -1,5 +1,9 @@
 # DB Spec: Activity & Task Tracking
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 Full entity spec: `specs/database/entities/activity.md`
 
 ---
@@ -26,6 +30,19 @@ Full entity spec: `specs/database/entities/activity.md`
 | deleted_at | TIMESTAMPTZ | No | Soft delete |
 
 DB CHECK: `deal_id IS NOT NULL OR contact_id IS NOT NULL OR company_id IS NOT NULL OR lead_id IS NOT NULL`
+
+---
+
+## Relationships
+
+| From | To | FK | On Delete |
+|------|----|----|-----------|
+| Activity | Organization | organization_id | CASCADE |
+| Activity | User (owner) | owner_id | RESTRICT |
+| Activity | Deal | deal_id | SET NULL |
+| Activity | Contact | contact_id | SET NULL |
+| Activity | Company | company_id | SET NULL |
+| Activity | Lead | lead_id | SET NULL |
 
 ---
 

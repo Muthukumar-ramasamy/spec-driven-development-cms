@@ -9,7 +9,7 @@
 | Feature name | Activity & Task Tracking |
 | Module | Module 6 |
 | Priority | P0 |
-| Status | Draft |
+| Status | Approved |
 | Author | Product Agent |
 | Created | 2026-06-13 |
 | Last updated | 2026-06-13 |

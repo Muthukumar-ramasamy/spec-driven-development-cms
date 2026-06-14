@@ -25,3 +25,11 @@ export class ValidationError extends Error {
     this.name = 'ValidationError'
   }
 }
+
+export class UnauthorizedError extends Error {
+  statusCode = 401
+  constructor(message = 'UNAUTHORIZED') {
+    super(message)
+    this.name = 'UnauthorizedError'
+  }
+}

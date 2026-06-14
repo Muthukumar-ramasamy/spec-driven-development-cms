@@ -147,6 +147,51 @@ Empty state
 | BR # | Rule | Unit Test | Integration Test |
 |------|------|-----------|-----------------|
 | BR-01 | Company name unique per org | companies-unit-02, companies-unit-update-conflict | companies-int-02 |
-| BR-02 | Contacts unlinked on soft-delete | companies-unit-07 | companies-int-contacts-unlinked |
+| BR-02 | Contacts unlinked on soft-delete | companies-unit-07 | companies-int-contacts-unlinked, companies-int-deleted-in-db |
 | BR-03 | Sales rep can only edit own company | companies-unit-update-forbidden, companies-unit-update-no-reassign | companies-int-06, companies-int-no-reassign-rep |
 | BR-04 | All queries scoped to org | companies-unit-03 (ownerId not forced) | companies-int-03, companies-int-get-org-isolation |
+
+---
+
+## 7. Quality Gate Checklist
+
+```
+COVERAGE — AC TRACEABILITY
+[x] Every AC-NN in feature-spec.md has at least one E2E test ID
+[x] No AC is left without a test
+[x] test-spec.md maps each test ID back to the AC it covers
+
+COVERAGE — BR TRACEABILITY
+[x] Every BR-NN in feature-spec.md has at least one unit or integration test
+[x] BR-02 (soft-delete contacts) also verified with integration test
+[x] No BR is left without a test
+
+PERMISSIONS COVERAGE
+[x] Every row in the permissions matrix has TWO tests: allowed AND denied
+[x] Denied tests assert HTTP 403 (not 404 or 200)
+[x] Admin-only delete tested with Manager token (403) and Sales Rep token (403)
+[x] "Own records only" BR-03: Sales Rep cannot edit another rep's company
+
+MULTI-TENANCY ISOLATION
+[x] companies-int-03: org B cannot see org A companies (list endpoint)
+[x] companies-int-get-org-isolation: org B cannot view org A company (GET :id)
+
+SOFT DELETE
+[x] companies-int-soft-delete-excluded: soft-deleted not returned by list
+[x] companies-int-deleted-in-db: record still in DB with deleted_at set
+[x] companies-int-04: 204 response on admin delete; list excludes it
+
+FORM VALIDATION (E2E)
+[x] companies-e2e-form-required: empty form → inline "Company name is required" error
+[x] companies-e2e-02: duplicate name → inline conflict error (not generic toast)
+
+ERROR STATES (E2E)
+[x] companies-e2e-empty: no search results → empty state message
+[x] companies-int-get-404: 404 for non-existent company ID
+
+UNIT TEST QUALITY
+[x] Each unit test uses Arrange → Act → Assert structure
+[x] vi.resetAllMocks() called in beforeEach of every describe block
+[x] All service functions tested for both success and error paths
+[x] Error types checked: NotFoundError, ConflictError, ForbiddenError
+```

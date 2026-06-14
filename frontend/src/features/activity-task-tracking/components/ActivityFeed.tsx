@@ -128,7 +128,7 @@ export function ActivityFeed({ linkedRecord, showAddButton = true }: Props) {
   // Build filter: set the appropriate FK field
   const filters = {
     [`${linkedRecord.type}Id`]: linkedRecord.id,
-    sort: 'createdAt',
+    sort: 'created_at',
     order: 'desc' as const,
     limit: 50,
   }

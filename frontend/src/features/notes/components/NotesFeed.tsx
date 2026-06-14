@@ -80,7 +80,7 @@ export function NotesFeed({ recordType, recordId }: NotesFeedProps) {
   const notes = data?.data ?? []
 
   return (
-    <Box>
+    <Box data-testid="notes-feed">
       {/* Add-note form at the top of the feed */}
       <NoteForm
         recordType={recordType}
@@ -112,6 +112,7 @@ export function NotesFeed({ recordType, recordId }: NotesFeedProps) {
       {notes.map((note) => (
         <NoteCard
           key={note.id}
+          data-testid="note-card"
           note={note}
           onUpdate={async (id, patch) => {
             await update.mutateAsync({ id, data: patch })

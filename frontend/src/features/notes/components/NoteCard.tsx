@@ -46,11 +46,12 @@ interface NoteCardProps {
   onDelete: (id: string) => Promise<void>
   isUpdating: boolean
   isDeleting: boolean
+  'data-testid'?: string
 }
 
 // ── component ─────────────────────────────────────────────────────────────────
 
-export function NoteCard({ note, onUpdate, onDelete, isUpdating, isDeleting }: NoteCardProps) {
+export function NoteCard({ note, onUpdate, onDelete, isUpdating, isDeleting, 'data-testid': testId }: NoteCardProps) {
   const user = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -126,6 +127,7 @@ export function NoteCard({ note, onUpdate, onDelete, isUpdating, isDeleting }: N
   return (
     <Card
       variant="outlined"
+      data-testid={testId ?? 'note-card'}
       sx={{
         mb: 1.5,
         borderLeft: note.isPinned ? '3px solid' : '1px solid',
@@ -136,7 +138,7 @@ export function NoteCard({ note, onUpdate, onDelete, isUpdating, isDeleting }: N
         {/* Header row: author + timestamp + action icons */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="subtitle2" fontWeight={600}>
+            <Typography variant="subtitle2" fontWeight={600} data-testid="note-author-badge">
               {note.authorName}
             </Typography>
             <Typography variant="caption" color="text.secondary">

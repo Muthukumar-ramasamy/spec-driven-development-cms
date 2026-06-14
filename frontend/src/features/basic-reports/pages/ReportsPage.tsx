@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Container, Divider, Stack, Typography } from '@mui/material'
+import { Box, Container, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import { useAuth } from '../../../hooks/useAuth'
 import { DateRangePicker } from '../components/DateRangePicker'
 import { DealsReportSection } from '../components/DealsReportSection'
@@ -49,6 +49,23 @@ export default function ReportsPage() {
       {/* Shared filter controls */}
       <Box mb={4} p={3} sx={{ backgroundColor: 'grey.50', borderRadius: 2 }}>
         <DateRangePicker filters={filters} onChange={setFilters} />
+        {canFilterByRep && (
+          <Box mt={2}>
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Filter by rep</InputLabel>
+              <Select
+                label="Filter by rep"
+                value={filters.ownerId ?? ''}
+                onChange={(e) =>
+                  setFilters((f) => ({ ...f, ownerId: e.target.value || undefined }))
+                }
+                data-testid="filter-by-rep"
+              >
+                <MenuItem value="">All reps</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        )}
       </Box>
 
       <Divider sx={{ mb: 4 }} />

@@ -26,7 +26,7 @@ export default function LoginPage() {
   const [serverError, setServerError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (user) navigate('/contacts', { replace: true })
+    if (user) navigate('/deals', { replace: true })
   }, [user, navigate])
 
   const {
@@ -48,7 +48,7 @@ export default function LoginPage() {
   return (
     <Paper elevation={2} sx={{ p: 4 }}>
       <Typography variant="h5" fontWeight={700} align="center" gutterBottom>
-        CRM
+        SpecCRM
       </Typography>
       <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
         Sign in to your workspace

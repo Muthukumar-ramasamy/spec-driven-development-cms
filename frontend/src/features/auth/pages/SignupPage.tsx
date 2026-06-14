@@ -43,7 +43,7 @@ export default function SignupPage() {
   return (
     <Paper elevation={2} sx={{ p: 4 }}>
       <Typography variant="h5" fontWeight={700} align="center" gutterBottom>
-        CRM
+        SpecCRM
       </Typography>
       <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
         Create your workspace

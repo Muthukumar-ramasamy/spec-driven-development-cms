@@ -79,7 +79,7 @@ export function NoteForm({
           disabled={isSubmitting}
           startIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : null}
         >
-          {isSubmitting ? 'Saving…' : 'Add note'}
+          {isSubmitting ? 'Saving…' : 'Save note'}
         </Button>
       </Box>
     </Box>

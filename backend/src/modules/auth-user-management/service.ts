@@ -5,6 +5,7 @@ import {
   ConflictError,
   ForbiddenError,
   NotFoundError,
+  UnauthorizedError,
   UnprocessableError,
 } from '../../lib/errors'
 import { JWTPayload } from '../../lib/auth'
@@ -93,7 +94,7 @@ export async function signup(fastify: FastifyInstance, input: SignupInput) {
 export async function login(fastify: FastifyInstance, input: LoginInput) {
   const user = await repo.findUserByEmailGlobal(input.email)
   if (!user) {
-    throw new Error('UNAUTHORIZED')
+    throw new UnauthorizedError()
   }
 
   // BR-06: deactivated users cannot log in
@@ -103,12 +104,12 @@ export async function login(fastify: FastifyInstance, input: LoginInput) {
 
   const passwordMatch = await bcrypt.compare(input.password, user.passwordHash)
   if (!passwordMatch) {
-    throw new Error('UNAUTHORIZED')
+    throw new UnauthorizedError()
   }
 
   // Pending users (invite not yet accepted) cannot log in with a password
   if (user.status === 'pending') {
-    throw new Error('UNAUTHORIZED')
+    throw new UnauthorizedError()
   }
 
   const token = signToken(fastify, user)

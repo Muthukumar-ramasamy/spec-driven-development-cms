@@ -131,7 +131,7 @@ export function PipelineValueSection({ filters }: PipelineValueSectionProps) {
                 ))}
                 <TableRow sx={{ backgroundColor: 'action.hover' }}>
                   <TableCell>
-                    <strong>Total</strong>
+                    <strong>Grand Total</strong>
                   </TableCell>
                   <TableCell align="right">
                     <strong>

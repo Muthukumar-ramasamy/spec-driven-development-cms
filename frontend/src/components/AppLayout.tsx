@@ -40,7 +40,7 @@ export function AppLayout() {
       >
         <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
           <Typography variant="h6" fontWeight={700} color="primary">
-            CRM
+            SpecCRM
           </Typography>
         </Box>
 

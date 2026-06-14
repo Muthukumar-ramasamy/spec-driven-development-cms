@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, ilike, isNull, sql } from 'drizzle-orm'
+import { and, asc, count, desc, eq, ilike, inArray, isNull, sql } from 'drizzle-orm'
 import { db } from '../../db'
 import { deals, Deal, NewDeal } from '../../db/schema/deals'
 import { pipelineStages, PipelineStage, NewPipelineStage } from '../../db/schema/pipeline-stages'
@@ -50,9 +50,7 @@ export async function findManyDeals(
   const where = and(
     eq(deals.organizationId, organizationId),
     isNull(deals.deletedAt),
-    statusList.length > 0
-      ? sql`${deals.status} = ANY(${sql.raw(`ARRAY[${statusList.map((s) => `'${s}'`).join(',')}]::deal_status[]`)})`
-      : undefined,
+    statusList.length > 0 ? inArray(deals.status, statusList as ('open' | 'won' | 'lost')[]) : undefined,
     filters.ownerId ? eq(deals.ownerId, filters.ownerId) : undefined,
     filters.stageId ? eq(deals.stageId, filters.stageId) : undefined,
     filters.search ? ilike(deals.title, `%${filters.search}%`) : undefined,

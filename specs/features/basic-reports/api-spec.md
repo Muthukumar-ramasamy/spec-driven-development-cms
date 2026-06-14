@@ -1,5 +1,9 @@
 # API Spec: Basic Reports
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 Full OpenAPI definition: `specs/api/openapi.yaml`
 
 ---
@@ -77,6 +81,14 @@ Full OpenAPI definition: `specs/api/openapi.yaml`
 ```
 
 ---
+
+## Error Codes
+
+| Scenario | HTTP | Error code |
+|----------|------|------------|
+| Invalid date format in startDate/endDate | 400 | VALIDATION_ERROR |
+| startDate is after endDate | 400 | VALIDATION_ERROR |
+| ownerId references a user outside the org | 404 | NOT_FOUND |
 
 ## Security Notes
 

@@ -17,6 +17,9 @@ import LeadsPage from './features/lead-management/pages/LeadsPage'
 // Activity & Task Tracking pages
 import MyTasksPage from './features/activity-task-tracking/pages/MyTasksPage'
 
+// Basic Reports pages
+import ReportsPage from './features/basic-reports/pages/ReportsPage'
+
 // Deal & Pipeline Management pages
 import PipelineBoardPage from './features/deal-pipeline-management/pages/PipelineBoardPage'
 import DealDetailPage from './features/deal-pipeline-management/pages/DealDetailPage'
@@ -61,6 +64,7 @@ export const router = createBrowserRouter([
           { path: '/deals/:id', element: <DealDetailPage /> },
           { path: '/settings/pipeline', element: <PipelineSettingsPage /> },
           { path: '/tasks', element: <MyTasksPage /> },
+          { path: '/reports', element: <ReportsPage /> },
           // Additional feature routes registered below by /implement-feature
         ],
       },

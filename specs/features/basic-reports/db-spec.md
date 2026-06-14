@@ -1,5 +1,9 @@
 # DB Spec: Basic Reports
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 ---
 
 ## No New Entities

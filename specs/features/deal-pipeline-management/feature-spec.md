@@ -9,7 +9,7 @@
 | Feature name | Deal & Pipeline Management |
 | Module | Module 5 |
 | Priority | P0 |
-| Status | Draft |
+| Status | Approved |
 | Author | Product Agent |
 | Created | 2026-06-13 |
 | Last updated | 2026-06-13 |

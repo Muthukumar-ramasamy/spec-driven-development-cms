@@ -1,5 +1,9 @@
 # DB Spec: Deal & Pipeline Management
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 Full entity specs: `specs/database/entities/deal.md`, `specs/database/entities/pipeline.md`, `specs/database/entities/pipeline-stage.md`
 
 ---
@@ -38,6 +42,8 @@ DB CHECK: `lost_reason IS NOT NULL WHEN status = 'lost'`
 | organization_id | UUID | Yes | FK → organizations.id |
 | name | VARCHAR(255) | Yes | Default "Sales Pipeline" |
 | is_default | BOOLEAN | Yes | Partial unique: one default per org |
+| created_at | TIMESTAMPTZ | Yes | |
+| updated_at | TIMESTAMPTZ | Yes | |
 
 ### PipelineStage → `pipeline_stages`
 
@@ -49,6 +55,8 @@ DB CHECK: `lost_reason IS NOT NULL WHEN status = 'lost'`
 | name | VARCHAR(100) | Yes | Unique per pipeline |
 | display_order | INTEGER | Yes | |
 | probability | INTEGER | Yes | 0–100 (CHECK constraint) |
+| created_at | TIMESTAMPTZ | Yes | |
+| updated_at | TIMESTAMPTZ | Yes | |
 | deleted_at | TIMESTAMPTZ | No | Soft delete |
 
 ### DealStageHistory (for stage audit trail)
@@ -64,6 +72,25 @@ DB CHECK: `lost_reason IS NOT NULL WHEN status = 'lost'`
 | moved_at | TIMESTAMPTZ | Yes | DEFAULT NOW() |
 
 DealStageHistory is append-only — no UPDATE or DELETE ever.
+
+---
+
+## Relationships
+
+| From | To | FK | On Delete |
+|------|----|----|-----------|
+| Deal | Organization | organization_id | CASCADE |
+| Deal | User (owner) | owner_id | RESTRICT |
+| Deal | PipelineStage | stage_id | RESTRICT |
+| Deal | Contact | contact_id | SET NULL |
+| Deal | Company | company_id | SET NULL |
+| Deal | Lead | lead_id | SET NULL |
+| PipelineStage | Pipeline | pipeline_id | CASCADE |
+| PipelineStage | Organization | organization_id | CASCADE |
+| DealStageHistory | Deal | deal_id | CASCADE |
+| DealStageHistory | PipelineStage (to) | to_stage_id | RESTRICT |
+| DealStageHistory | User (mover) | moved_by | RESTRICT |
+| Pipeline | Organization | organization_id | CASCADE |
 
 ---
 

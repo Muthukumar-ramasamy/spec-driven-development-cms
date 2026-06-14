@@ -14,6 +14,11 @@ import ContactDetailPage from './features/contact-management/pages/ContactDetail
 // Lead Management pages
 import LeadsPage from './features/lead-management/pages/LeadsPage'
 
+// Deal & Pipeline Management pages
+import PipelineBoardPage from './features/deal-pipeline-management/pages/PipelineBoardPage'
+import DealDetailPage from './features/deal-pipeline-management/pages/DealDetailPage'
+import PipelineSettingsPage from './features/deal-pipeline-management/pages/PipelineSettingsPage'
+
 // Auth pages
 import LoginPage from './features/auth/pages/LoginPage'
 import SignupPage from './features/auth/pages/SignupPage'
@@ -49,6 +54,9 @@ export const router = createBrowserRouter([
           { path: '/companies', element: <CompaniesPage /> },
           { path: '/companies/:id', element: <CompanyDetailPage /> },
           { path: '/leads', element: <LeadsPage /> },
+          { path: '/deals', element: <PipelineBoardPage /> },
+          { path: '/deals/:id', element: <DealDetailPage /> },
+          { path: '/settings/pipeline', element: <PipelineSettingsPage /> },
           // Additional feature routes registered below by /implement-feature
         ],
       },

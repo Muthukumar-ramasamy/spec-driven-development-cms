@@ -7,6 +7,7 @@ import { authUserManagementRoutes } from './modules/auth-user-management/routes'
 import { contactManagementRoutes } from './modules/contact-management/routes'
 import { companyManagementRoutes } from './modules/company-management/routes'
 import { leadManagementRoutes } from './modules/lead-management/routes'
+import { dealPipelineManagementRoutes } from './modules/deal-pipeline-management/routes'
 
 export function buildApp() {
   const app = Fastify({ logger: true })
@@ -60,6 +61,7 @@ export function buildApp() {
   app.register(contactManagementRoutes, { prefix: '/api' })
   app.register(companyManagementRoutes, { prefix: '/api' })
   app.register(leadManagementRoutes, { prefix: '/api' })
+  app.register(dealPipelineManagementRoutes, { prefix: '/api' })
 
   return app
 }

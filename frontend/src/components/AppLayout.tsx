@@ -1,6 +1,6 @@
 import { Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Divider, Typography } from '@mui/material'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { PeopleOutlined, BusinessOutlined, TrendingUpOutlined, LogoutOutlined } from '@mui/icons-material'
+import { PeopleOutlined, BusinessOutlined, TrendingUpOutlined, PieChartOutlined, LogoutOutlined } from '@mui/icons-material'
 import { useLogout } from '../features/auth/hooks/useAuthMutations'
 import { useAuth } from '../hooks/useAuth'
 
@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { label: 'Contacts', path: '/contacts', icon: <PeopleOutlined fontSize="small" /> },
   { label: 'Companies', path: '/companies', icon: <BusinessOutlined fontSize="small" /> },
   { label: 'Leads', path: '/leads', icon: <TrendingUpOutlined fontSize="small" /> },
+  { label: 'Deals', path: '/deals', icon: <PieChartOutlined fontSize="small" /> },
 ]
 
 export function AppLayout() {

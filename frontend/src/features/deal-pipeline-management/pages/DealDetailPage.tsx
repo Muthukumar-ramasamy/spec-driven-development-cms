@@ -32,6 +32,7 @@ import { DealStatusChip } from '../components/DealStatusChip'
 import { DealForm } from '../components/DealForm'
 import { MarkLostModal } from '../components/MarkLostModal'
 import { StageHistory } from '../components/StageHistory'
+import { NotesFeed } from '../../../features/notes/components/NotesFeed'
 import type { Deal } from '../types'
 
 type TabValue = 'history' | 'activities' | 'notes'
@@ -266,12 +267,8 @@ export default function DealDetailPage() {
           </Box>
         )}
 
-        {activeTab === 'notes' && (
-          <Box sx={{ py: 2 }}>
-            <Typography color="text.secondary">
-              Notes will be shown here. (Coming soon)
-            </Typography>
-          </Box>
+        {activeTab === 'notes' && id && (
+          <NotesFeed recordType="deal" recordId={id} />
         )}
       </Box>
 

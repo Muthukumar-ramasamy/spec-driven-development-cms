@@ -20,6 +20,7 @@ import { useAuth } from '../../../hooks/useAuth'
 import { useContact } from '../hooks/useContact'
 import { useContactMutations } from '../hooks/useContactMutations'
 import { ContactForm } from '../components/ContactForm'
+import { NotesFeed } from '../../../features/notes/components/NotesFeed'
 
 export default function ContactDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -28,7 +29,8 @@ export default function ContactDetailPage() {
   const [tab, setTab] = useState(0)
   const [formOpen, setFormOpen] = useState(false)
 
-  const { data: contact, isLoading, isError } = useContact(id ?? '')
+  const { data: response, isLoading, isError } = useContact(id ?? '')
+  const contact = response?.data
   const { remove } = useContactMutations()
 
   function handleDelete() {
@@ -143,10 +145,8 @@ export default function ContactDetailPage() {
                   No activities yet.
                 </Typography>
               )}
-              {tab === 2 && (
-                <Typography color="text.secondary" variant="body2">
-                  No notes yet.
-                </Typography>
+              {tab === 2 && id && (
+                <NotesFeed recordType="contact" recordId={id} />
               )}
             </Box>
           </Paper>

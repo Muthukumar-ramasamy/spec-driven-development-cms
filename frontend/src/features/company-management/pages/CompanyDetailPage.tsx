@@ -20,6 +20,7 @@ import { useAuth } from '../../../hooks/useAuth'
 import { useCompany } from '../hooks/useCompany'
 import { useCompanyMutations } from '../hooks/useCompanyMutations'
 import { CompanyForm } from '../components/CompanyForm'
+import { NotesFeed } from '../../../features/notes/components/NotesFeed'
 
 export default function CompanyDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -154,10 +155,8 @@ export default function CompanyDetailPage() {
                   No activities yet.
                 </Typography>
               )}
-              {tab === 2 && (
-                <Typography color="text.secondary" variant="body2">
-                  No notes yet.
-                </Typography>
+              {tab === 2 && id && (
+                <NotesFeed recordType="company" recordId={id} />
               )}
             </Box>
           </Paper>

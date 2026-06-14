@@ -1,5 +1,9 @@
 # DB Spec: Notes
 
+| Field | Value |
+|-------|-------|
+| Status | Approved |
+
 Full entity spec: `specs/database/entities/note.md`
 
 ---
@@ -22,6 +26,19 @@ Full entity spec: `specs/database/entities/note.md`
 | deleted_at | TIMESTAMPTZ | No | Soft delete |
 
 DB CHECK: `deal_id IS NOT NULL OR contact_id IS NOT NULL OR company_id IS NOT NULL OR lead_id IS NOT NULL`
+
+---
+
+## Relationships
+
+| From | To | FK | On Delete |
+|------|----|----|-----------|
+| Note | Organization | organization_id | CASCADE |
+| Note | User (author) | author_id | RESTRICT |
+| Note | Deal | deal_id | SET NULL |
+| Note | Contact | contact_id | SET NULL |
+| Note | Company | company_id | SET NULL |
+| Note | Lead | lead_id | SET NULL |
 
 ---
 

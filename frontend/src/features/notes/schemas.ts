@@ -1,13 +1,20 @@
 import { z } from 'zod'
 
+// Empty strings from unregistered RHF fields must be coerced to undefined
+// before uuid() validation runs, otherwise the backend rejects them.
+const optionalUuid = z.preprocess(
+  (v) => (v === '' || v == null ? undefined : v),
+  z.string().uuid().optional(),
+)
+
 // Mirrors openapi.yaml #/components/schemas/CreateNoteRequest
 export const createNoteSchema = z.object({
   content: z.string().min(1, 'Note content is required'),
   isPinned: z.boolean().optional().default(false),
-  dealId: z.string().uuid().optional(),
-  contactId: z.string().uuid().optional(),
-  companyId: z.string().uuid().optional(),
-  leadId: z.string().uuid().optional(),
+  dealId: optionalUuid,
+  contactId: optionalUuid,
+  companyId: optionalUuid,
+  leadId: optionalUuid,
 })
 
 export type CreateNoteInput = z.infer<typeof createNoteSchema>

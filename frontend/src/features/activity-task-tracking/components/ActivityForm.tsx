@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import {
   Alert,
   Avatar,
@@ -35,8 +36,14 @@ import { useActivityMutations } from '../hooks/useActivityMutations'
 import { createActivitySchema, updateActivitySchema, ACTIVITY_TYPES, ACTIVITY_TYPE_LABELS } from '../schemas'
 import { getApiErrorMessage } from '../../../lib/api'
 import { ActivityTypeIcon } from './ActivityTypeIcon'
+import { listContacts } from '../../contact-management/api'
+import { listCompanies } from '../../company-management/api'
+import { listLeads } from '../../lead-management/api'
+import { listDeals } from '../../deal-pipeline-management/api'
 import type { Activity, LinkedRecord } from '../types'
 import type { CreateActivityFormValues, UpdateActivityFormValues } from '../schemas'
+
+type PickerType = 'deal' | 'contact' | 'company' | 'lead' | ''
 
 interface Props {
   open: boolean
@@ -54,6 +61,22 @@ function deriveMode(edit?: Activity | null): 'log' | 'schedule' {
 export function ActivityForm({ open, onClose, editActivity, linkedRecord }: Props) {
   const [serverError, setServerError] = useState<string | null>(null)
   const [mode, setMode] = useState<'log' | 'schedule'>(deriveMode(editActivity))
+  const [pickerType, setPickerType] = useState<PickerType>('')
+  const [pickerRecordId, setPickerRecordId] = useState('')
+
+  // Fetch records for the selected type — only when the picker is active and no linkedRecord prop
+  const { data: contactsData } = useQuery({ queryKey: ['contacts', { limit: 200 }], queryFn: () => listContacts({ limit: 200 }), enabled: !linkedRecord && pickerType === 'contact' })
+  const { data: companiesData } = useQuery({ queryKey: ['companies', { limit: 200 }], queryFn: () => listCompanies({ limit: 200 }), enabled: !linkedRecord && pickerType === 'company' })
+  const { data: leadsData } = useQuery({ queryKey: ['leads', { limit: 200 }], queryFn: () => listLeads({ limit: 200 }), enabled: !linkedRecord && pickerType === 'lead' })
+  const { data: dealsData } = useQuery({ queryKey: ['deals', { limit: 200, status: 'open' }], queryFn: () => listDeals({ limit: 200, status: 'open' }), enabled: !linkedRecord && pickerType === 'deal' })
+
+  const recordOptions = useMemo<{ id: string; label: string }[]>(() => {
+    if (pickerType === 'contact') return (contactsData?.data ?? []).map(c => ({ id: c.id, label: `${c.firstName}${c.lastName ? ` ${c.lastName}` : ''}` }))
+    if (pickerType === 'company') return (companiesData?.data ?? []).map(c => ({ id: c.id, label: c.name }))
+    if (pickerType === 'lead') return (leadsData?.data ?? []).map(l => ({ id: l.id, label: l.title }))
+    if (pickerType === 'deal') return (dealsData?.data ?? []).map(d => ({ id: d.id, label: d.title }))
+    return []
+  }, [pickerType, contactsData, companiesData, leadsData, dealsData])
 
   const { create, update } = useActivityMutations()
   const isEdit = !!editActivity
@@ -118,6 +141,8 @@ export function ActivityForm({ open, onClose, editActivity, linkedRecord }: Prop
         leadId: linkedRecord?.type === 'lead' ? linkedRecord.id : '',
       })
       setMode('schedule')
+      setPickerType('')
+      setPickerRecordId('')
     }
   }, [open, editActivity, linkedRecord, reset])
 
@@ -139,14 +164,22 @@ export function ActivityForm({ open, onClose, editActivity, linkedRecord }: Prop
         type: values.type,
         subject: values.subject,
         notes: values.notes,
-        dueDate: values.dueDate,
+        dueDate: values.dueDate || undefined,
       }
       update.mutate(
         { id: editActivity!.id, data: updatePayload },
         { onSuccess: onClose, onError: handleApiError },
       )
     } else {
-      create.mutate(values, { onSuccess: onClose, onError: handleApiError })
+      const payload = {
+        ...values,
+        dealId: values.dealId || undefined,
+        contactId: values.contactId || undefined,
+        companyId: values.companyId || undefined,
+        leadId: values.leadId || undefined,
+        dueDate: values.dueDate || undefined,
+      }
+      create.mutate(payload, { onSuccess: onClose, onError: handleApiError })
     }
   }
 
@@ -157,10 +190,6 @@ export function ActivityForm({ open, onClose, editActivity, linkedRecord }: Prop
   const { ref: subjectRef, ...subjectRest } = register('subject')
   const { ref: notesRef, ...notesRest } = register('notes')
   const { ref: dueDateRef, ...dueDateRest } = register('dueDate')
-  const { ref: dealIdRef, ...dealIdRest } = register('dealId')
-  const { ref: contactIdRef, ...contactIdRest } = register('contactId')
-  const { ref: companyIdRef, ...companyIdRest } = register('companyId')
-  const { ref: leadIdRef, ...leadIdRest } = register('leadId')
 
   const drawerTitle = isEdit
     ? 'Edit activity'
@@ -299,52 +328,57 @@ export function ActivityForm({ open, onClose, editActivity, linkedRecord }: Prop
             />
           </Box>
         ) : (
-          /* Manual UUID fields when no linked record is provided */
+          /* Two-step named picker: choose record type, then pick a named record */
           <Box sx={{ mt: 1 }}>
-            <TextField
-              label="Deal ID"
-              fullWidth
-              size="small"
-              margin="dense"
-              placeholder="UUID (optional)"
-              inputRef={dealIdRef}
-              {...dealIdRest}
-              error={!!errors.dealId}
-              helperText={errors.dealId?.message}
-            />
-            <TextField
-              label="Contact ID"
-              fullWidth
-              size="small"
-              margin="dense"
-              placeholder="UUID (optional)"
-              inputRef={contactIdRef}
-              {...contactIdRest}
-              error={!!errors.contactId}
-              helperText={errors.contactId?.message}
-            />
-            <TextField
-              label="Company ID"
-              fullWidth
-              size="small"
-              margin="dense"
-              placeholder="UUID (optional)"
-              inputRef={companyIdRef}
-              {...companyIdRest}
-              error={!!errors.companyId}
-              helperText={errors.companyId?.message}
-            />
-            <TextField
-              label="Lead ID"
-              fullWidth
-              size="small"
-              margin="dense"
-              placeholder="UUID (optional)"
-              inputRef={leadIdRef}
-              {...leadIdRest}
-              error={!!errors.leadId}
-              helperText={errors.leadId?.message}
-            />
+            <FormControl fullWidth size="small" margin="dense">
+              <InputLabel>Link to</InputLabel>
+              <Select
+                label="Link to"
+                value={pickerType}
+                onChange={(e) => {
+                  const t = e.target.value as PickerType
+                  setPickerType(t)
+                  setPickerRecordId('')
+                  setValue('dealId', '')
+                  setValue('contactId', '')
+                  setValue('companyId', '')
+                  setValue('leadId', '')
+                }}
+              >
+                <MenuItem value="">None</MenuItem>
+                <MenuItem value="deal">Deal</MenuItem>
+                <MenuItem value="contact">Contact</MenuItem>
+                <MenuItem value="company">Company</MenuItem>
+                <MenuItem value="lead">Lead</MenuItem>
+              </Select>
+            </FormControl>
+
+            {pickerType !== '' && (
+              <FormControl fullWidth size="small" margin="dense">
+                <InputLabel>
+                  {pickerType.charAt(0).toUpperCase() + pickerType.slice(1)}
+                </InputLabel>
+                <Select
+                  label={pickerType.charAt(0).toUpperCase() + pickerType.slice(1)}
+                  value={pickerRecordId}
+                  onChange={(e) => {
+                    const id = e.target.value
+                    setPickerRecordId(id)
+                    setValue('dealId', pickerType === 'deal' ? id : '')
+                    setValue('contactId', pickerType === 'contact' ? id : '')
+                    setValue('companyId', pickerType === 'company' ? id : '')
+                    setValue('leadId', pickerType === 'lead' ? id : '')
+                  }}
+                >
+                  <MenuItem value="">— select —</MenuItem>
+                  {recordOptions.map((opt) => (
+                    <MenuItem key={opt.id} value={opt.id}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           </Box>
         )}
 

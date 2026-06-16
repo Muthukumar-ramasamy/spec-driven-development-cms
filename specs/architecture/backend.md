@@ -137,7 +137,9 @@ backend/
 
 ## 4. Module File Pattern
 
-Every module has the same 5 files. The `auth` module is an exception — it has no repository because it owns the user and organisation creation at the service level.
+Every module has the same 5 files: routes, controller, service, repository, schemas.
+
+The `auth` module follows the same 5-file pattern. Its repository owns the `organizations` and `users` DB queries (`createOrganization`, `createUser`, `findUserByEmailGlobal`). The service holds all business rules (duplicate-email check, deactivated-user guard, password verify) and calls the repository.
 
 ### routes.ts
 ```ts

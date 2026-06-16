@@ -17,13 +17,13 @@
 
 ## 2. Unit Tests
 
-**File**: `backend/src/modules/auth-user-management/__tests__/auth-user-management.service.test.ts`
+**File**: `backend/src/modules/auth/__tests__/auth.service.test.ts`
 
-> File name must end in `.service.test.ts` to match vitest workspace glob.
+> Module folder is `modules/auth/` per `specs/architecture/backend.md`. File name must end in `.service.test.ts` to match vitest workspace glob.
 
 **Mocks:**
 ```typescript
-vi.mock('../auth-user-management.repository')
+vi.mock('../auth.repository')
 vi.mock('../../../lib/password')
 vi.mock('../../../lib/jwt')
 ```
@@ -50,9 +50,9 @@ AuthService
 
 ## 3. Integration Tests
 
-**File**: `backend/src/modules/auth-user-management/__tests__/auth-user-management.repository.test.ts`
+**File**: `backend/src/modules/auth/__tests__/auth.repository.test.ts`
 
-> File name must end in `.repository.test.ts` (NOT `.repository.integration.test.ts`) to match vitest workspace glob:
+> Module folder is `modules/auth/` per `specs/architecture/backend.md`. File name must end in `.repository.test.ts` to match vitest workspace glob:
 > `backend/src/modules/**/__tests__/*.repository.test.ts`
 
 **Test environment:**

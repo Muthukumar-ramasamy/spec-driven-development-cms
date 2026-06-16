@@ -8,6 +8,18 @@ export default defineWorkspace([
       environment: 'node',
       globals: true,
     },
+    coverage: {
+      provider: 'v8',
+      include: [
+        'backend/src/modules/**/*.ts',
+        'backend/src/lib/**/*.ts',
+        'backend/src/middleware/**/*.ts',
+      ],
+      exclude: [
+        'backend/src/modules/**/__tests__/**',
+      ],
+      reporter: ['text', 'json-summary'],
+    },
   },
   {
     test: {

@@ -13,7 +13,6 @@ Feature name → kebab slug: `LeadManagement` → `lead-management`
 Generates the full test suite for an implemented feature:
 - Unit tests (Vitest — service layer, mocked repository)
 - Integration tests (Vitest — repository layer, real test DB)
-- E2E tests (Playwright — full browser flows)
 - Updates the test-spec.md with filled-in test IDs
 
 **Pre-condition**: `/implement-feature {FeatureName}` must have been run first.
@@ -78,29 +77,7 @@ If any are missing, stop:
 
 ---
 
-## Step 3 — QA Agent: E2E tests
-
-**Read these files in order:**
-1. `agents/qa-agent.md`
-2. `specs/features/{feature-slug}/feature-spec.md` (every AC must map to a test)
-3. `specs/features/{feature-slug}/ui-spec.md`
-4. `specs/ui/{page}.md` (for each page referenced in ui-spec)
-
-**Produce**: `e2e/{feature-slug}.spec.ts`
-
-**QA Agent E2E quality gates:**
-```
-[ ] Every AC-NN has at least one E2E test
-[ ] Every permission row tested: allowed AND denied
-[ ] Form validation tested: required fields empty → inline error
-[ ] API error states tested: error banner/toast shown
-[ ] Empty state tested: page shows empty state when no data
-[ ] Test ID: '{feature}-e2e-{NN}: {description}'
-```
-
----
-
-## Step 4 — Update test-spec.md
+## Step 3 — Update test-spec.md
 
 Update `specs/features/{feature-slug}/test-spec.md`:
 - Fill in the test IDs in the AC coverage map
@@ -120,28 +97,26 @@ Print:
 Files produced:
   backend/src/modules/{feature-slug}/__tests__/{feature-slug}.service.test.ts
   backend/src/modules/{feature-slug}/__tests__/{feature-slug}.repository.test.ts
-  e2e/{feature-slug}.spec.ts
   specs/features/{feature-slug}/test-spec.md (updated with test IDs)
 
 AC coverage:
-  AC-01 ({description}): {feature}-unit-01, {feature}-int-01, {feature}-e2e-01
-  AC-02 ({description}): {feature}-int-02, {feature}-e2e-02
+  AC-01 ({description}): {feature}-unit-01, {feature}-int-01
+  AC-02 ({description}): {feature}-int-02
   ... (one row per AC)
 
 Uncovered: none / [list AC or BR IDs that could not be tested, with reason]
 
 Run tests:
   npx vitest run --reporter=verbose backend/src/modules/{feature-slug}
-  npx playwright test e2e/{feature-slug}.spec.ts
 
-Feature is Done when all three test suites pass with zero failures.
+Feature is Done when both test suites pass with zero failures.
 ```
 
 ---
 
 ## Rules
 
-- Every AC must map to at least one E2E test — no exceptions
+- Every AC must map to at least one unit or integration test — no exceptions
 - Every BR must map to at least one unit or integration test — no exceptions
 - Every permission boundary must have both an ALLOWED test and a DENIED test
 - Multi-tenancy isolation must be tested for every list endpoint

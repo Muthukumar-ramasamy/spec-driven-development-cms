@@ -47,7 +47,6 @@ frontend/src/features/{feature-slug}/api.ts
 frontend/src/features/{feature-slug}/schemas.ts
 backend/src/modules/{feature-slug}/__tests__/{feature-slug}.service.test.ts
 backend/src/modules/{feature-slug}/__tests__/{feature-slug}.repository.test.ts
-e2e/{feature-slug}.spec.ts
 ```
 
 ---
@@ -140,7 +139,7 @@ Read `test-spec.md` and cross-reference against the test files:
 
 ```
 AC COVERAGE
-[ ] Every AC-NN from feature-spec.md has at least one E2E test
+[ ] Every AC-NN from feature-spec.md has at least one unit or integration test
 [ ] AC coverage map in test-spec.md is fully filled in (no empty test ID cells)
 [ ] No AC marked as untestable without a written explanation
 
@@ -161,9 +160,6 @@ SOFT DELETE TESTS
 [ ] Soft-deleted record does not appear in list endpoint
 [ ] Soft-deleted record still exists in DB with deleted_at NOT NULL
 
-FORM VALIDATION (E2E)
-[ ] Each required field tested: submit empty → inline error shown
-[ ] API 409 conflict tested: inline conflict error shown (not generic toast)
 ```
 
 ---

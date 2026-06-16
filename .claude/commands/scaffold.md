@@ -167,12 +167,7 @@ backend/src/test/
 ├── helpers.ts        ← seedOrganization, seedUser, cleanupOrg, createTestToken
 └── setup.ts          ← Global test setup (DB connection, env vars)
 
-e2e/
-├── helpers.ts        ← loginAs, createContact, etc. (page helper functions)
-└── fixtures/         ← Shared test data factories
-
 vitest.config.ts      ← Unit + integration test config
-playwright.config.ts  ← E2E test config
 ```
 
 ---
@@ -200,8 +195,7 @@ Ensure these scripts exist in both `backend/package.json` and `frontend/package.
 {
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "test:e2e": "playwright test"
+    "build": "tsc && vite build"
   }
 }
 ```
@@ -235,9 +229,7 @@ Created:
   backend/src/           — Fastify app structure
   backend/drizzle/       — Migrations directory
   frontend/src/          — React + Vite app structure
-  e2e/                   — Playwright E2E test directory
   vitest.config.ts
-  playwright.config.ts
 
 Next steps:
   1. Copy .env.example to .env in both backend/ and frontend/

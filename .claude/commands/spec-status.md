@@ -33,7 +33,7 @@ For each feature, check if these paths exist:
 - `backend/src/modules/{feature-slug}/service.ts` → backend implemented?
 - `frontend/src/features/{feature-slug}/pages/` → frontend implemented?
 - `backend/src/modules/{feature-slug}/__tests__/{feature-slug}.service.test.ts` → unit tests?
-- `e2e/{feature-slug}.spec.ts` → E2E tests?
+- `backend/src/modules/{feature-slug}/__tests__/{feature-slug}.repository.test.ts` → integration tests?
 - `specs/features/{feature-slug}/review.md` → review done?
 
 ### Step 4 — Determine pipeline stage
@@ -48,7 +48,7 @@ Map each feature to a pipeline stage:
 | `Approved` | feature-spec + db-spec + api-spec all Status = Approved |
 | `Implementing` | Approved, but backend or frontend files not yet present |
 | `Implemented` | backend + frontend files exist |
-| `Tests written` | unit + E2E test files exist |
+| `Tests written` | unit + integration test files exist |
 | `Reviewed` | review.md exists |
 | `Done` | review.md exists with Result = ✅ Approved |
 
